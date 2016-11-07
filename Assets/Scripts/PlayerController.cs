@@ -27,20 +27,22 @@ public class PlayerController : MonoBehaviour
     {
         if (_systemController.GameState != SystemController.State.Play) return;
         if (!Input.GetButton("Fire2")) return;
-        if ((Time.time - _lastClickTime) > 0.25f)
+        if ((Time.time - _lastClickTime) > 0.05f)
         {
             if (_systemController.TransformMode)
             {
                 _systemController.TransformMode = false;
-                _body.velocity = _lastVelocity;
-                _body.useGravity = true;
+                //_body.velocity = _lastVelocity;
+                //_body.useGravity = true;
+                Time.timeScale = 1;
             }
             else
             {
                 _systemController.TransformMode = true;
-                _lastVelocity = _body.velocity;
-                _body.velocity = new Vector3(0, 0);
-                _body.useGravity = false;
+                //_lastVelocity = _body.velocity;
+                //_body.velocity = new Vector3(0, 0);
+                //_body.useGravity = false;
+                Time.timeScale = 0.1f;
             }
         }
         _lastClickTime = Time.time;
@@ -63,11 +65,6 @@ public class PlayerController : MonoBehaviour
 	    _body.velocity = new Vector3(moveHorizontal*MoveSpeed, moveVertical);
 	}
 
-    private void Jump()
-    {
-        
-    }
-
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Blocker"))
@@ -78,6 +75,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Finish"))
         {
             _systemController.GameState = SystemController.State.Win;
+            Time.timeScale = 0;
         }
     }
 
