@@ -81,8 +81,10 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Platform"))
+        GameObject collider = collision.gameObject;
+        if (collider.CompareTag("Platform"))
         {
+            Vector3 v = collision.contacts[0].normal;
             _isGrounded = true;
         }
     }
