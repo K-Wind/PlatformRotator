@@ -94,6 +94,11 @@ public class SystemController : MonoBehaviour
         }
     }
 
+    private void GenerateRow()
+    {
+        
+    }
+
     public enum State
     {
         Dead = -1,
