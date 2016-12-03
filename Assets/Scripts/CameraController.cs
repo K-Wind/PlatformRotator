@@ -2,11 +2,23 @@
 using UnityEngine;
 using System.Collections;
 
-public class CameraController : MonoBehaviour {
+public class CameraController : MonoBehaviour
+{
 
-    public GameObject player;       //Public variable to store a reference to the player game object
+    private GameObject _player;
+    public GameObject Player
+    {
+        get { return _player;}
+        set
+        {
+            _player = value;
+            _offset = transform.position - _player.transform.position;
+        }
 
-    private Vector3 offset;         //Private variable to store the offset distance between the player and camera
+    }
+
+    private Vector3 _offset;         //Private variable to store the offset distance between the player and camera
+
     private float cameraOffset;
     private Vector3 lastCameraOffset;
     private Quaternion cameraRotation;
@@ -16,7 +28,6 @@ public class CameraController : MonoBehaviour {
     void Start()
     {
         //Calculate and store the offset value by getting the distance between the player's position and camera's position.
-        offset = transform.position - player.transform.position;
     }
 
     void Update()
@@ -26,16 +37,18 @@ public class CameraController : MonoBehaviour {
     // LateUpdate is called after Update each frame
     void LateUpdate()
     {
-        // Set the position of the camera's transform to be the same as the player's, but offset by the calculated offset distance.
+        //Set the position of the camera's transform to be the same as the player's, but offset by the calculated offset distance.
         //transform.position = player.transform.position + offset;
+        if (_player != null)
+        {
+            //GetDirection();
 
-        GetDirection();
-
-        transform.position = player.transform.position + offset;
-        transform.position = new Vector3(transform.position.x + cameraOffset, transform.position.y, transform.position.z);
-        //transform.rotation = Quaternion.Euler(-player.transform.rotation.x + 8, -player.transform.rotation.y + 40 + cameraRotation.y, -player.transform.rotation.z);
-        transform.LookAt(player.transform);
-        lastPlayer = player.transform;
+            transform.position = _player.transform.position + _offset;
+            //transform.position = new Vector3(transform.position.x + cameraOffset, transform.position.y, transform.position.z);
+            //transform.rotation = Quaternion.Euler(-player.transform.rotation.x + 8, -player.transform.rotation.y + 40 + cameraRotation.y, -player.transform.rotation.z);
+            transform.LookAt(_player.transform);
+            //lastPlayer = _player.transform;
+        }
     }
 
     void GetDirection()
@@ -44,7 +57,7 @@ public class CameraController : MonoBehaviour {
         {
             return;
         }
-        float movement = player.transform.position.x - lastPlayer.position.x;
+        float movement = _player.transform.position.x - lastPlayer.position.x;
         //float dir = player.transform.InverseTransformDirection(player.GetComponent<Rigidbody>().velocity).x;
         cameraOffset = movement*2;
         if (cameraOffset > 0)

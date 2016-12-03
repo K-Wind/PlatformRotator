@@ -1,14 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 using UnityEngine.SceneManagement;
 
 public class SystemController : MonoBehaviour
 {
     public GameObject PlayerGameObject;
     public GameObject[] CameraGameObjects;
+    public GameObject[] Rotators;
+    public GameObject Mover;
+    public float Speed;
 
     private State _gameState;
-    public State GameState
+    public State GameState //0 = Ready, 1 = Playing, -1 = Dead, 2 = Win,
     {
         get { return _gameState; }
         set
@@ -16,7 +20,7 @@ public class SystemController : MonoBehaviour
             _gameState = value;
             SwitchCamera();
         }
-    } //0 = Ready, 1 = Playing, -1 = Dead, 2 = Win,
+    }
 
     private bool _transformMode;
     public bool TransformMode {
@@ -32,30 +36,30 @@ public class SystemController : MonoBehaviour
 	void Start ()
 	{
 	    Time.timeScale = 1;
-        GameState = State.Play;;
+        GameState = State.Play;
+        Rotators = Resources.LoadAll<GameObject>("Rotators");
+
+        GeneratePlayer();
+        System.Random rng = new System.Random();
+        var r = Enumerable.Range(0, Rotators.Length).OrderBy(x => rng.Next()).ToArray();
+        GenerateRow(new[] { Rotators[r[0]], Rotators[0], Rotators[r[1]] }, new Vector3(4, 0));
+        r = Enumerable.Range(0, Rotators.Length).OrderBy(x => rng.Next()).ToArray();
+        GenerateRow(new[] { Rotators[r[0]], Rotators[r[1]], Rotators[r[2]] }, new Vector3(8, 0));
+        InvokeRepeating("GenerateRow", 0, 4/Speed);
 	}
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    void Update ()
 	{
-        //if (GameState == State.Ready)
-        //{
-        //    if (Input.GetButtonDown("Submit"))
-        //    {
-        //        GameState = State.Play;
-        //        Time.timeScale = 1;
-        //    }
-        //}
 	    if (Input.GetButtonDown("Restart"))
 	    {
-            SceneManager.LoadScene("Level1");
+            SceneManager.LoadScene("Level2");
         }
         if (GameState == State.Dead || GameState == State.Win)
 	        {
 	            if (Input.GetButtonDown("Fire2"))
 	            {
-	                //Time.timeScale = 0;
-                    SceneManager.LoadScene("Level1");
+                    SceneManager.LoadScene("Level2");
 	            }
 	        }
 	    if (Input.GetButtonDown("Cancel"))
@@ -82,21 +86,52 @@ public class SystemController : MonoBehaviour
                 CameraGameObjects[0].SetActive(false);
                 CameraGameObjects[1].SetActive(true);
                 break;
-            //case State.Ready:
-            //    CameraGameObjects[0].SetActive(false);
-            //    CameraGameObjects[1].SetActive(true);
-            //    break;
             case State.Win:
                 CameraGameObjects[0].SetActive(false);
                 CameraGameObjects[1].SetActive(true);
                 break;
-               
         }
+    }
+
+    private void GeneratePlayer()
+    {
+        GameObject player = (GameObject)Instantiate(PlayerGameObject, new Vector3(2.5f, 0.5f, 1), Quaternion.identity);
+        PlayerController pc = (PlayerController)player.GetComponent("PlayerController");
+        pc.System = gameObject;
+
+        ((CameraController) GameObject.Find("Player Camera").GetComponent("CameraController")).Player = player;
     }
 
     private void GenerateRow()
     {
-        
+        GameObject start = (GameObject)Instantiate(Mover, new Vector3(12, 0), Quaternion.identity);
+        MoveController controller = (MoveController)start.GetComponent("MoveController");
+        controller.System = this;
+
+        System.Random rng = new System.Random();
+        var r = Enumerable.Range(0, 8).OrderBy(x => rng.Next()).ToArray();
+        var ra = new[] {Rotators[r[0]], Rotators[r[1]], Rotators[r[2]]};
+
+        foreach (GameObject x in ra)
+        {
+            x.transform.eulerAngles = new Vector3(0, 0, 90*rng.Next(4));
+        }
+
+        controller.Rotators = ra;
+    }
+
+    private void GenerateRow(GameObject[] rotators, Vector3 pos)
+    {
+        GameObject start = (GameObject)Instantiate(Mover, pos, Quaternion.identity);
+        MoveController controller = (MoveController)start.GetComponent("MoveController");
+        controller.System = this;
+
+        foreach (GameObject x in rotators)
+        {
+            x.transform.rotation = Quaternion.identity;
+        }
+
+        controller.Rotators = rotators;
     }
 
     public enum State
