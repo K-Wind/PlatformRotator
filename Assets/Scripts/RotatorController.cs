@@ -11,18 +11,7 @@ public class RotatorController : MonoBehaviour
     // Use this for initialization
     void Start ()
     {
-        //Texture2D texture = new Texture2D((int)Renderer.bounds.size.x, (int)Renderer.bounds.size.y);
-        //var borderColor = new Color(0, 0, 0, 1);
-        //for (var w = 0; w < texture.width; w++)
-        //{
-        //    for (var h = 0; h < texture.height; w++)
-        //    {
-        //        if (w < BorderWidth || w > texture.width - 1 - BorderWidth) texture.SetPixel(w, h, borderColor);
-        //        else if (h < BorderWidth || h > texture.height - 1 - BorderWidth) texture.SetPixel(w, h, borderColor);
-        //    }
-        //}
-        //texture.Apply();
-        //Renderer.material.mainTexture = texture;
+
     }
 
     // Update is called once per frame

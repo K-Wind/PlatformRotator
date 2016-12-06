@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\InfoController.cs" />
     <Compile Include="Assets\Scripts\MoveController.cs" />
+    <Compile Include="Assets\Scripts\MoveSpawner.cs" />
     <Compile Include="Assets\Scripts\PlayerController.cs" />
     <Compile Include="Assets\Scripts\RotatorController.cs" />
     <Compile Include="Assets\Scripts\SystemController.cs" />

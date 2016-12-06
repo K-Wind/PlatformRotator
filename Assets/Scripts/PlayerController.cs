@@ -5,20 +5,24 @@ using System.Collections;
 public class PlayerController : MonoBehaviour
 {
     public GameObject System; //0 = Dead, 1 = Playing, 2 = Completed level
-    public bool TransformMode;
-    public float JumpHeight;
+    public float JumpSpeed;
+    public float JumpShortSpeed;
     public float MoveSpeed;
 
     private Rigidbody _body;
+    private float _move;
     private bool _isGrounded;
-    private float _lastClickTime;
-    private Vector3 _lastVelocity;
+    private float _lastGround;
+    private bool _jump;
+    private bool _jumpCancel;
 
     private SystemController _systemController;
 
     // Use this for initialization
     void Start () {
         _body = GetComponent<Rigidbody>();
+        _isGrounded = true;
+
         _systemController = System.GetComponent<SystemController>();
     }
     
@@ -26,44 +30,66 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (_systemController.GameState != SystemController.State.Play) return;
-        if (!Input.GetButton("Fire2")) return;
-        if ((Time.time - _lastClickTime) > 0.05f)
+        if (Input.GetButtonDown("Fire2"))
         {
             if (_systemController.TransformMode)
             {
                 _systemController.TransformMode = false;
-                //_body.velocity = _lastVelocity;
-                //_body.useGravity = true;
                 Time.timeScale = 1;
             }
             else
             {
                 _systemController.TransformMode = true;
-                //_lastVelocity = _body.velocity;
-                //_body.velocity = new Vector3(0, 0);
-                //_body.useGravity = false;
+                transform.parent = null;
                 Time.timeScale = 0.1f;
             }
         }
-        _lastClickTime = Time.time;
+
+        if ((Input.GetButtonDown("Jump") && _isGrounded) || (Input.GetButtonDown("Jump") && Time.time - _lastGround < 0.1f))
+        {
+            _jump = true;
+        }
+        if (Input.GetButtonUp("Jump") && !_isGrounded)
+        {
+            _jumpCancel = true;
+        }
+
+        _move = Input.GetAxis("Horizontal");
     }
 
 	void FixedUpdate ()
 	{
 	    if (_systemController.GameState != SystemController.State.Play) return;
 	    if (_systemController.TransformMode) return;
-	    float moveVertical = _body.velocity.y;
-	    if (Input.GetButton("Jump"))
+
+        _isGrounded = Physics.Raycast(transform.position, transform.up * -1, 0.3f, LayerMask.NameToLayer("Platform"));
+        if (_isGrounded) _lastGround = Time.time;
+
+        if (_jump)
 	    {
-	        if (_isGrounded)
-	        {
-	            moveVertical = JumpHeight;
-	            _isGrounded = false;
-	        }
+	        _body.velocity = new Vector3(_body.velocity.x, JumpSpeed);
+	        _jump = false;
+
+	        transform.parent = null;
 	    }
-	    float moveHorizontal = Input.GetAxis("Horizontal");
-	    _body.velocity = new Vector3(moveHorizontal*MoveSpeed, moveVertical);
+        if (_jumpCancel)
+        {
+            if (_body.velocity.y > JumpShortSpeed) _body.velocity = new Vector2(_body.velocity.x, JumpShortSpeed);
+            _jumpCancel = false;
+        }
+        _body.velocity = new Vector3(_move*MoveSpeed,_body.velocity.y);
+
+        transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, 0);
 	}
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Point"))
+        {
+            _systemController.AddPoint();
+            Destroy(other.gameObject);
+        }
+    }
 
     void OnCollisionEnter(Collision collision)
     {
@@ -77,15 +103,17 @@ public class PlayerController : MonoBehaviour
             _systemController.GameState = SystemController.State.Win;
             Time.timeScale = 0;
         }
+        if (collision.gameObject.CompareTag("Platform"))
+        {
+            if (!_systemController.TransformMode)
+            {
+                transform.parent = collision.transform.parent;
+            }
+        }
     }
 
-    void OnCollisionStay(Collision collision)
+    void OnCollisionExit(Collision collision)
     {
-        GameObject collider = collision.gameObject;
-        if (collider.CompareTag("Platform"))
-        {
-            Vector3 v = collision.contacts[0].normal;
-            _isGrounded = true;
-        }
+        transform.parent = null;
     }
 }

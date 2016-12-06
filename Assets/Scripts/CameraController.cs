@@ -17,17 +17,13 @@ public class CameraController : MonoBehaviour
 
     }
 
-    private Vector3 _offset;         //Private variable to store the offset distance between the player and camera
-
-    private float cameraOffset;
-    private Vector3 lastCameraOffset;
-    private Quaternion cameraRotation;
-    private Transform lastPlayer;
+    private Vector3 _offset;
 
     // Use this for initialization
     void Start()
     {
         //Calculate and store the offset value by getting the distance between the player's position and camera's position.
+
     }
 
     void Update()
@@ -43,26 +39,12 @@ public class CameraController : MonoBehaviour
         {
             //GetDirection();
 
+            //transform.position = new Vector3(_player.transform.position.x, _player.transform.position.y);
             transform.position = _player.transform.position + _offset;
             //transform.position = new Vector3(transform.position.x + cameraOffset, transform.position.y, transform.position.z);
             //transform.rotation = Quaternion.Euler(-player.transform.rotation.x + 8, -player.transform.rotation.y + 40 + cameraRotation.y, -player.transform.rotation.z);
-            transform.LookAt(_player.transform);
+            //transform.LookAt(_player.transform);
             //lastPlayer = _player.transform;
-        }
-    }
-
-    void GetDirection()
-    {
-        if (lastPlayer == null)
-        {
-            return;
-        }
-        float movement = _player.transform.position.x - lastPlayer.position.x;
-        //float dir = player.transform.InverseTransformDirection(player.GetComponent<Rigidbody>().velocity).x;
-        cameraOffset = movement*2;
-        if (cameraOffset > 0)
-        {
-            return;
         }
     }
 }

@@ -10,6 +10,7 @@ public class SystemController : MonoBehaviour
     public GameObject[] Rotators;
     public GameObject Mover;
     public float Speed;
+    public int Points;
 
     private State _gameState;
     public State GameState //0 = Ready, 1 = Playing, -1 = Dead, 2 = Win,
@@ -32,20 +33,27 @@ public class SystemController : MonoBehaviour
         }
     }
 
-    // Use this for initialization
-	void Start ()
-	{
-	    Time.timeScale = 1;
-        GameState = State.Play;
+    void Awake()
+    {
         Rotators = Resources.LoadAll<GameObject>("Rotators");
+        GameState = State.Play;
+    }
 
+    // Use this for initialization
+    void Start ()
+    {
+        Time.timeScale = 1;
         GeneratePlayer();
+
         System.Random rng = new System.Random();
         var r = Enumerable.Range(0, Rotators.Length).OrderBy(x => rng.Next()).ToArray();
         GenerateRow(new[] { Rotators[r[0]], Rotators[0], Rotators[r[1]] }, new Vector3(4, 0));
         r = Enumerable.Range(0, Rotators.Length).OrderBy(x => rng.Next()).ToArray();
         GenerateRow(new[] { Rotators[r[0]], Rotators[r[1]], Rotators[r[2]] }, new Vector3(8, 0));
-        InvokeRepeating("GenerateRow", 0, 4/Speed);
+        r = Enumerable.Range(0, Rotators.Length).OrderBy(x => rng.Next()).ToArray();
+        GenerateRow(new[] { Rotators[r[0]], Rotators[r[1]], Rotators[r[2]] }, new Vector3(12, 0));
+
+        StartCoroutine("WaitAndSpawn");
 	}
 
     // Update is called once per frame
@@ -93,6 +101,12 @@ public class SystemController : MonoBehaviour
         }
     }
 
+    public void AddPoint()
+    {
+        Points += 1;
+        Speed += 0.1f;
+    }
+
     private void GeneratePlayer()
     {
         GameObject player = (GameObject)Instantiate(PlayerGameObject, new Vector3(2.5f, 0.5f, 1), Quaternion.identity);
@@ -104,12 +118,12 @@ public class SystemController : MonoBehaviour
 
     private void GenerateRow()
     {
-        GameObject start = (GameObject)Instantiate(Mover, new Vector3(12, 0), Quaternion.identity);
+        GameObject start = (GameObject)Instantiate(Mover, new Vector3(16, 0), Quaternion.identity);
         MoveController controller = (MoveController)start.GetComponent("MoveController");
         controller.System = this;
 
         System.Random rng = new System.Random();
-        var r = Enumerable.Range(0, 8).OrderBy(x => rng.Next()).ToArray();
+        var r = Enumerable.Range(0, Rotators.Length-1).OrderBy(x => rng.Next()).ToArray();
         var ra = new[] {Rotators[r[0]], Rotators[r[1]], Rotators[r[2]]};
 
         foreach (GameObject x in ra)
@@ -128,7 +142,7 @@ public class SystemController : MonoBehaviour
 
         foreach (GameObject x in rotators)
         {
-            x.transform.rotation = Quaternion.identity;
+            x.transform.eulerAngles = new Vector3(0, 0, 0);
         }
 
         controller.Rotators = rotators;

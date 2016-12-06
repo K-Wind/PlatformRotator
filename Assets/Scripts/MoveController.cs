@@ -11,6 +11,15 @@ public class MoveController : MonoBehaviour
         GenerateRotators();
     }
 
+        // Update is called once per frame
+    void Update () {
+        gameObject.transform.Translate(new Vector3(-System.Speed, 0, 0) * Time.deltaTime);
+        if (gameObject.transform.position.x <= -12)
+        {
+            Destroy(GameObject.Find(gameObject.name));
+        }
+    }
+
     void GenerateRotators()
     {
         NewRotator(0, 4);
@@ -20,19 +29,9 @@ public class MoveController : MonoBehaviour
 
     void NewRotator(int r, int posY)
     {
-        //var rotation = Quaternion.
         GameObject rotator = (GameObject)Instantiate(Rotators[r], new Vector3(transform.position.x, posY), Rotators[r].transform.rotation);
         rotator.transform.parent = gameObject.transform;
         RotatorController rc = (RotatorController)rotator.GetComponent("RotatorController");
         rc.System = GameObject.Find("System");
-    }
-
-    // Update is called once per frame
-    void Update () {
-        gameObject.transform.Translate(new Vector3(-System.Speed, 0, 0) * Time.deltaTime);
-        if (gameObject.transform.position.x <= -10)
-        {
-            Destroy(GameObject.Find(gameObject.name));
-        }
     }
 }
