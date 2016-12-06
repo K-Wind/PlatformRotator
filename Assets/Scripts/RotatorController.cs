@@ -30,6 +30,10 @@ public class RotatorController : MonoBehaviour
 
     void OnMouseDown()
     {
+        if (transform.FindChild("Player"))
+        {
+            transform.FindChild("Player").parent = null;
+        }
         transform.eulerAngles = transform.eulerAngles + new Vector3(0, 0, 90);
     }
 }

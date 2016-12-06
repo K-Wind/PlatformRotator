@@ -14,7 +14,7 @@ public class MoveController : MonoBehaviour
         // Update is called once per frame
     void Update () {
         gameObject.transform.Translate(new Vector3(-System.Speed, 0, 0) * Time.deltaTime);
-        if (gameObject.transform.position.x <= -12)
+        if (gameObject.transform.position.x <= -16)
         {
             Destroy(GameObject.Find(gameObject.name));
         }
