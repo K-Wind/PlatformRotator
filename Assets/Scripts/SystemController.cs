@@ -107,6 +107,16 @@ public class SystemController : MonoBehaviour
         Speed += 0.1f;
     }
 
+    //Used as a Coroutine
+    IEnumerator WaitAndSpawn()
+    {
+        while (true)
+        {
+            GenerateRow();
+            yield return new WaitForSeconds(4 / Speed);
+        }
+    }
+
     private void GeneratePlayer()
     {
         GameObject player = (GameObject)Instantiate(PlayerGameObject, new Vector3(2.5f, 0.5f, 1), Quaternion.identity);
