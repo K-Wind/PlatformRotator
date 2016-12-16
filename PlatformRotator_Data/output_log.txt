@@ -14,31 +14,13 @@ Platform assembly: C:\Users\Kavu\Source\RotatingPlatformer\PlatformRotator_Data\
 Loading C:\Users\Kavu\Source\RotatingPlatformer\PlatformRotator_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
 Platform assembly: C:\Users\Kavu\Source\RotatingPlatformer\PlatformRotator_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
 Loading C:\Users\Kavu\Source\RotatingPlatformer\PlatformRotator_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
-- Completed reload, in  0.105 seconds
+- Completed reload, in  0.081 seconds
 Platform assembly: C:\Users\Kavu\Source\RotatingPlatformer\PlatformRotator_Data\Managed\System.Core.dll (this message is harmless)
 Platform assembly: C:\Users\Kavu\Source\RotatingPlatformer\PlatformRotator_Data\Managed\System.dll (this message is harmless)
 desktop: 1920x1080 144Hz; virtual: 3840x1200 at 0,0
 <RI> Initializing input.
 <RI> Input initialized.
 <RI> Initialized touch support.
-UnloadTime: 0.620126 ms
-Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 3.792651 ms
-
-Unloading 2 unused Assets to reduce memory usage. Loaded Objects now: 513.
-Total: 0.211579 ms (FindLiveObjects: 0.035652 ms CreateObjectMapping: 0.017241 ms MarkObjects: 0.137351 ms  DeleteObjects: 0.002922 ms)
-
-Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 0.542684 ms
-
-Unloading 1 unused Assets to reduce memory usage. Loaded Objects now: 513.
-Total: 0.176803 ms (FindLiveObjects: 0.032146 ms CreateObjectMapping: 0.013150 ms MarkObjects: 0.127999 ms  DeleteObjects: 0.003214 ms)
-
-Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
-UnloadTime: 0.516675 ms
-
-Unloading 1 unused Assets to reduce memory usage. Loaded Objects now: 513.
-Total: 0.218885 ms (FindLiveObjects: 0.034776 ms CreateObjectMapping: 0.014027 ms MarkObjects: 0.166867 ms  DeleteObjects: 0.002922 ms)
-
+UnloadTime: 0.634446 ms
 Setting up 1 worker threads for Enlighten.
-  Thread -> id: 1ad0 -> priority: 1 
+  Thread -> id: 3718 -> priority: 1 

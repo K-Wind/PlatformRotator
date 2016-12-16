@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
             {
                 _systemController.TransformMode = true;
                 transform.parent = null;
-                Time.timeScale = 0.1f;
+                Time.timeScale = 0;
             }
         }
 
@@ -62,7 +62,7 @@ public class PlayerController : MonoBehaviour
 	    if (_systemController.GameState != SystemController.State.Play) return;
 	    if (_systemController.TransformMode) return;
 
-        _isGrounded = Physics.Raycast(transform.position, transform.up * -1, 0.3f, LayerMask.NameToLayer("Platform"));
+        _isGrounded = Physics.Raycast(transform.position, transform.up * -1, 0.3f, LayerMask.NameToLayer("Platform")) || Physics.Raycast(transform.position - new Vector3(0.1f, 0), transform.up * -1, 0.3f, LayerMask.NameToLayer("Platform")) || Physics.Raycast(transform.position + new Vector3(0.1f, 0), transform.up * -1, 0.3f, LayerMask.NameToLayer("Platform"));
         if (_isGrounded) _lastGround = Time.time;
 
         if (_jump)
@@ -77,7 +77,11 @@ public class PlayerController : MonoBehaviour
             if (_body.velocity.y > JumpShortSpeed) _body.velocity = new Vector2(_body.velocity.x, JumpShortSpeed);
             _jumpCancel = false;
         }
-        _body.velocity = new Vector3(_move*MoveSpeed,_body.velocity.y);
+        _body.velocity = new Vector3(_move*MoveSpeed - _systemController.Speed, _body.velocity.y);
+	    //if (_isGrounded || _move < 0)
+	    //{
+     //       _body.velocity = new Vector3(_body.velocity.x - _systemController.Speed, _body.velocity.y);
+     //   }
 
         transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, 0);
 	}
@@ -107,7 +111,7 @@ public class PlayerController : MonoBehaviour
         {
             if (!_systemController.TransformMode)
             {
-                transform.parent = collision.transform.parent;
+                //transform.parent = collision.transform.parent;
             }
         }
     }

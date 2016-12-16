@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine.SceneManagement;
 
 public class SystemController : MonoBehaviour
@@ -10,7 +13,8 @@ public class SystemController : MonoBehaviour
     public GameObject[] Rotators;
     public GameObject Mover;
     public float Speed;
-    public int Points;
+    public int Score;
+    public int HighScore;
 
     private State _gameState;
     public State GameState //0 = Ready, 1 = Playing, -1 = Dead, 2 = Win,
@@ -20,6 +24,13 @@ public class SystemController : MonoBehaviour
         {
             _gameState = value;
             SwitchCamera();
+            if (_gameState == State.Dead)
+            {
+                if (Score > HighScore)
+                {
+                    HighScore = Score;
+                }
+            }
         }
     }
 
@@ -36,13 +47,14 @@ public class SystemController : MonoBehaviour
     void Awake()
     {
         Rotators = Resources.LoadAll<GameObject>("Rotators");
-        GameState = State.Play;
+        GameState = State.Ready;
+        Load();
     }
 
     // Use this for initialization
     void Start ()
     {
-        Time.timeScale = 1;
+        Time.timeScale = 0;
         GeneratePlayer();
 
         System.Random rng = new System.Random();
@@ -59,17 +71,16 @@ public class SystemController : MonoBehaviour
     // Update is called once per frame
     void Update ()
 	{
+        if(GameState == State.Ready && Input.anyKey)
+	    {
+	        GameState = State.Play;
+	        Time.timeScale = 1;
+	    }
 	    if (Input.GetButtonDown("Restart"))
 	    {
+            Save();
             SceneManager.LoadScene("Level2");
         }
-        if (GameState == State.Dead || GameState == State.Win)
-	        {
-	            if (Input.GetButtonDown("Fire2"))
-	            {
-                    SceneManager.LoadScene("Level2");
-	            }
-	        }
 	    if (Input.GetButtonDown("Cancel"))
 	    {
 	        Application.Quit();
@@ -103,7 +114,7 @@ public class SystemController : MonoBehaviour
 
     public void AddPoint()
     {
-        Points += 1;
+        Score += 1;
         Speed += 0.1f;
     }
 
@@ -158,6 +169,35 @@ public class SystemController : MonoBehaviour
         controller.Rotators = rotators;
     }
 
+    void Save()
+    {
+        BinaryFormatter bf = new BinaryFormatter();
+        FileStream file = File.Open(Application.persistentDataPath + "/highScore.dat", FileMode.Open);
+
+        PlayerData data = new PlayerData {score = HighScore};
+
+        bf.Serialize(file, data);
+        file.Close();
+    }
+
+    void Load()
+    {
+        if (File.Exists(Application.persistentDataPath + "/highScore.dat"))
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream file = File.Open(Application.persistentDataPath + "/highScore.dat", FileMode.Open);
+            PlayerData data = (PlayerData) bf.Deserialize(file);
+            file.Close();
+
+            HighScore = data.score;
+        }
+        else
+        {
+            File.Create(Application.persistentDataPath + "/highScore.dat");
+        }
+    }
+
+
     public enum State
     {
         Dead = -1,
@@ -165,4 +205,11 @@ public class SystemController : MonoBehaviour
         Play,
         Win
     };
+}
+
+
+[Serializable]
+class PlayerData
+{
+    public int score;
 }
